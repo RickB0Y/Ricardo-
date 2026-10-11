@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Razão — Razonetes, DRE e Balanço</title>
+<link rel="icon" href="data:,">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Pixelify+Sans:wght@700&family=Rye&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+:root{--bg:#f8f8f6;--fg:#1d1d1b;--card:#ffffff;--mut:#6a6a64;--acc:#1c7c4a;--on:#ffffff;--soft:#e6f2ea;--bd:#dcdcd4;--ok:#1c7c4a;--bad:#b3261e;--gold:#c9922e;--sans:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;--pix:"Pixelify Sans","IBM Plex Mono",ui-monospace,monospace;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121412;--fg:#ecece6;--card:#1b1d1a;--mut:#a0a198;--acc:#5fd394;--on:#0b1a12;--soft:#1f3328;--bd:#2f332d;--ok:#5fd394;--bad:#ff8a80;--gold:#e0b050}}
+:root[data-theme="dark"]{--bg:#121412;--fg:#ecece6;--card:#1b1d1a;--mut:#a0a198;--acc:#5fd394;--on:#0b1a12;--soft:#1f3328;--bd:#2f332d;--ok:#5fd394;--bad:#ff8a80;--gold:#e0b050}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;color:var(--fg);font:15px/1.5 var(--sans);font-variant-numeric:tabular-nums;background-color:var(--bg);background-image:linear-gradient(color-mix(in srgb,var(--fg) 5%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--fg) 5%,transparent) 1px,transparent 1px);background-size:24px 24px}
+.wrap{max-width:1180px;margin:0 auto;padding:16px}
+.mono{font-family:var(--mono)}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+.brand{background:none;border:0;padding:0;display:flex;align-items:center;gap:10px;color:var(--fg);font:700 28px/1 var(--pix);letter-spacing:-.01em}
+.brand svg{color:var(--acc)}
+#top{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,select,button{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:8px 11px;max-width:100%}
+button{cursor:pointer;background:var(--acc);color:var(--on);border-color:var(--acc);font-weight:500}
+button.ghost{background:transparent;color:var(--fg);border-color:var(--bd)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.tabs{display:flex;gap:6px;overflow-x:auto;white-space:nowrap;padding-bottom:10px;margin-bottom:14px;border-bottom:1px solid var(--bd)}
+.tabs button{flex:0 0 auto;background:transparent;color:var(--mut);border:1px solid transparent;border-radius:99px;padding:6px 14px}
+.tabs button:hover{color:var(--fg);border-color:var(--bd)}
+.tabs button.on{background:var(--acc);color:var(--on);border-color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:14px;overflow-x:auto}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;align-items:end}
+.form label{display:flex;flex-direction:column;font-size:13px;color:var(--mut);gap:3px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:6px 8px;border-bottom:1px solid var(--bd);text-align:left}
+th{font-size:13px;color:var(--mut);font-weight:500}
+td.n,th.n,.fin td:last-child{text-align:right;white-space:nowrap}
+.fin .sub td{font-weight:600;background:color-mix(in srgb,var(--acc) 8%,transparent)}
+.fin .tot td{font-weight:600;border-top:2px solid var(--fg)}
+.ind{padding-left:24px!important}
+.neg{color:var(--bad)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.rzs{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.rz{border:1px solid var(--bd);border-radius:12px;padding:8px;background:var(--card)}
+.rz h4{margin:0 0 6px;text-align:center;font-size:14px;font-weight:600}
+.rz .g{display:grid;grid-template-columns:1fr 1fr;border-top:2px solid var(--fg);min-height:44px}
+.rz .l{border-right:2px solid var(--fg);padding:4px 6px 4px 0;text-align:right}
+.rz .r{padding:4px 0 4px 6px}
+.rz .s{border-top:1px solid var(--bd);margin-top:6px;padding-top:4px;text-align:center;font-weight:600;font-size:14px}
+.rz small{display:block;color:var(--mut);font-size:11px;text-align:center}
+.ok{color:var(--ok);font-weight:600}.bad{color:var(--bad);font-weight:600}
+#msg{color:var(--bad);min-height:20px;margin:6px 0 0;font-size:14px}
+details summary{cursor:pointer;font-weight:500}
+.mut{color:var(--mut)}
+.jr td{border-bottom:0}.jr .first td{border-top:2px solid var(--bd)}.jr .tot td{border-top:2px solid var(--fg)}.jr .h{color:var(--mut);font-size:13px;font-style:italic}
+label.chk{display:flex;flex-direction:row;gap:8px;align-items:center;color:var(--fg);font-size:15px}label.chk input{width:auto}
+.bar{display:flex;justify-content:flex-end;margin-bottom:10px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}.stat{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px}.stat span{color:var(--mut);font-size:13px}.stat b{display:block;font-size:18px}
+.fx{font-size:13px}.fx th,.fx td{padding:5px 6px}th.c{text-align:center}
+.foot{margin-top:32px}
+.upd{text-align:right;color:var(--mut);font-size:12px;letter-spacing:.06em;margin:0}
+
+/* ---------- Tela inicial ---------- */
+.stage{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 290px minmax(0,1fr);grid-template-areas:"l p r";align-items:center;gap:28px;min-height:440px;padding:10px 0 6px}
+.sl{grid-area:l;position:relative;z-index:1}.sr{grid-area:r;position:relative;z-index:1}.sp{grid-area:p;position:relative;z-index:1;text-align:center}
+.hi{margin:0 0 10px;font-size:15px}
+.big{margin:0;font-size:clamp(40px,5.2vw,64px);font-weight:300;letter-spacing:-.04em;line-height:1.02}
+.pix{font-family:var(--pix);font-weight:700;color:var(--acc);letter-spacing:-.02em}
+.sub{margin:14px 0 0;font-size:14px;color:var(--mut);letter-spacing:.03em}
+.dots{position:absolute;right:-70px;top:-20px;width:400px;height:400px;pointer-events:none;opacity:.32;background:radial-gradient(circle,var(--fg) 1.2px,transparent 1.7px) 0 0/9px 9px;-webkit-mask-image:radial-gradient(circle at 62% 42%,#000 0,transparent 64%);mask-image:radial-gradient(circle at 62% 42%,#000 0,transparent 64%)}
+.cta{margin:22px 0 0}
+.cap{margin:30px 0 12px;font-size:12px;letter-spacing:.06em;color:var(--mut);text-align:center}
+.apps{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.app{display:flex;flex-direction:column;align-items:center;gap:7px;min-width:78px;padding:4px;background:none;border:0;border-radius:14px;color:var(--fg);font-weight:400}
+.tile{width:58px;height:58px;border-radius:16px;display:grid;place-items:center;color:var(--c);background:var(--card);border:1px solid var(--bd);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 6px 14px rgba(20,20,10,.09)}
+.app:hover .tile{border-color:var(--c)}
+.lb{font-size:13px;line-height:1.2;text-align:center}
+.vl{font:400 11px/1.2 var(--mono);color:var(--mut);text-align:center;max-width:110px}
+.dockw{display:flex;flex-direction:column;align-items:center;margin-top:6px}
+.dock{display:flex;gap:6px;max-width:100%;overflow-x:auto;padding:10px 14px;background:color-mix(in srgb,var(--card) 92%,transparent);border:1px solid var(--bd);border-radius:26px;box-shadow:0 12px 30px rgba(20,20,10,.10)}
+
+/* cartaz de procurado */
+.poster{position:relative;width:100%;max-width:290px;margin:0 auto;padding:24px 18px 18px;text-align:center;color:#3a2a14;border-radius:3px;border:2px solid #6b4a22;background:radial-gradient(circle at 18% 12%,rgba(255,255,255,.38),transparent 45%),radial-gradient(circle at 86% 92%,rgba(120,80,20,.2),transparent 52%),#e8d6a8;box-shadow:0 0 0 5px #e8d6a8,0 0 0 7px #6b4a22,0 20px 32px rgba(30,20,5,.22);transform:rotate(-1.5deg)}
+.tape{position:absolute;top:-12px;left:16px;width:66px;height:22px;background:rgba(240,215,120,.72);border:1px solid rgba(160,130,40,.28);transform:rotate(-8deg)}
+.tape+.tape{left:auto;right:16px;transform:rotate(7deg)}
+.pt{font-family:Rye,Georgia,serif;font-size:31px;line-height:1}
+.pm{font:italic 12px/1.3 var(--mono);margin:7px 0 12px}
+.ph{height:128px;margin:0 auto 12px;display:grid;place-items:center;border:3px solid #6b4a22;background:radial-gradient(circle,#6b4a22 1.1px,transparent 1.6px) 0 0/7px 7px,#d9c18a}
+.ph span{font-family:Rye,Georgia,serif;font-size:50px;line-height:1.15;padding:0 12px;color:#3a2a14;background:#e8d6a8;border:2px solid #6b4a22}
+.pn{font-family:Rye,Georgia,serif;font-size:19px;line-height:1.15;overflow-wrap:anywhere;margin-bottom:10px}
+.pl{font:500 12px var(--mono);letter-spacing:.06em}
+.pv{font-family:Rye,Georgia,serif;font-size:29px;line-height:1.1;overflow-wrap:anywhere}
+.pv.neg2{color:#9a2a1c}
+.pa{font:12px var(--mono);margin-top:7px;opacity:.82}
+.stamp{position:absolute;right:-12px;bottom:40px;transform:rotate(-12deg);padding:3px 10px;border:3px double currentColor;font:600 13px var(--mono);color:#6b4a22;background:rgba(232,214,168,.7)}
+.stamp.ok{color:#1c7c4a}.stamp.bad{color:#b3261e}
+
+@media(max-width:860px){
+ .stage{grid-template-columns:minmax(0,1fr);grid-template-areas:"l" "r" "p";gap:6px;min-height:0}
+ .sp{margin-top:28px}.sl .sub{display:none}.dots{display:none}
+ .big{font-size:clamp(38px,11vw,56px)}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body><div class="wrap">
+<header class="head"><button class="brand" onclick="go('ini')" aria-label="Ir para o início"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 7h18M12 7v14"/></svg>razão</button><div id="top"></div></header>
+<div id="main"></div>
+<footer class="foot">
+<p class="mut" style="font-size:13px">Os dados ficam salvos neste navegador, neste aparelho. Use o backup para levar suas empresas para outro lugar.</p>
+<input type="file" id="bf" accept=".json,application/json" hidden onchange="rst(this)">
+<p><button class="ghost" onclick="bkp()">Baixar backup</button> <button class="ghost" onclick="$('#bf').click()">Restaurar backup</button></p>
+<p class="mono upd" id="upd"></p>
+</footer>
+</div>
+<script>
+const G={AC:'Ativo Circulante',ANC:'Ativo Não Circulante',PC:'Passivo Circulante',PNC:'Passivo Não Circulante',PL:'Patrimônio Líquido',REC:'Receita',DED:'Deduções da Receita',CMV:'Custos (CMV/CPV/CSP)',DESP:'Despesas Operacionais',IR:'IR e CSLL'};
+const DG=['AC','ANC','DED','CMV','DESP','IR'];
+const SG={AC:'AC',ANC:'ANC',PC:'PC',PNC:'PNC',PL:'PL',REC:'DRE',DED:'DRE',CMV:'DRE',DESP:'DRE',IR:'DRE'};
+const PLAN=[['1.1.1','Caixa','AC'],['1.1.2','Bancos','AC'],['1.1.3','Clientes','AC'],['1.1.4','Estoques','AC'],['1.2.1','Imobilizado','ANC'],['1.2.2','(-) Depreciação Acumulada','ANC','C'],['2.1.1','Fornecedores','PC'],['2.1.2','Salários a Pagar','PC'],['2.1.3','Impostos a Recolher','PC'],['2.2.1','Empréstimos de Longo Prazo','PNC'],['3.1','Capital Social','PL'],['3.2','Reservas de Lucros','PL'],['4.1','Receita de Vendas','REC'],['4.2','(-) Impostos sobre Vendas','DED'],['5.1','Custo das Mercadorias Vendidas','CMV'],['6.1','Despesa com Salários','DESP'],['6.2','Despesa de Aluguel','DESP'],['6.3','Despesa de Depreciação','DESP'],['6.4','Despesas Gerais','DESP'],['7.1','Provisão para IR e CSLL','IR']];
+const mk=()=>PLAN.map(([c,n,g,nat])=>({c,n,g,nat:nat||(DG.includes(g)?'D':'C')}));
+let S=null,tab='ini',armed=false,ed=null,sel={dia:1,rz:1,bal:1,dre:1,bp:1};
+try{S=JSON.parse(localStorage.getItem('razao')||'null')}catch(e){}
+if(!S||!S.emp)S={cur:null,emp:{}};
+const save=()=>{try{localStorage.setItem('razao',JSON.stringify(S))}catch(e){}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const R=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const E=()=>S.emp[S.cur];
+const fd=s=>s?s.split('-').reverse().join('/'):'';
+const num=s=>{s=String(s).trim();return s.includes(',')?parseFloat(s.replace(/\./g,'').replace(',','.')):parseFloat(s)};
+const nm=(e,c)=>{const a=e.contas.find(x=>x.c===c);return a?a.c+' · '+esc(a.n):esc(c)};
+const msg=t=>{$('#msg').textContent=t};
+
+function saldos(e){const m={};e.contas.forEach(a=>m[a.c]={a,d:0,c:0,md:[],mc:[]});
+ e.lan.forEach(l=>{if(m[l.deb]){m[l.deb].d+=l.v;m[l.deb].md.push(l.v)}if(m[l.cre]){m[l.cre].c+=l.v;m[l.cre].mc.push(l.v)}});
+ Object.values(m).forEach(x=>x.s=x.a.nat==='D'?x.d-x.c:x.c-x.d);return m}
+const res=m=>Object.values(m).reduce((s,x)=>{const g=x.a.g;return g==='REC'?s+x.c-x.d:DG.slice(2).includes(g)?s-(x.d-x.c):s},0);
+function sec(m,g,sg,title,extra){const it=Object.values(m).filter(x=>x.a.g===g&&(x.d||x.c)).map(x=>[x.a.n,sg*(x.d-x.c)]);
+ if(extra&&extra[1])it.push(extra);const t=it.reduce((s,i)=>s+i[1],0);
+ return{t,it,h:`<tr class="sub"><td>${title}</td><td>${R(t)}</td></tr>`+it.map(i=>`<tr><td class="ind">${esc(i[0])}</td><td class="${i[1]<0?'neg':''}">${R(i[1])}</td></tr>`).join('')}}
+const tot=(l,v)=>`<tr class="tot"><td>${l}</td><td class="${v<0?'neg':''}">${R(v)}</td></tr>`;
+
+function novo(){const n=$('#nn').value.trim();if(!n)return $('#nn').focus();const id='e'+Date.now();S.emp[id]={nome:n,contas:mk(),lan:[]};S.cur=id;tab='ini';save();render()}
+function del(b){if(!armed){armed=true;b.textContent='Confirmar exclusão';return}armed=false;delete S.emp[S.cur];S.cur=Object.keys(S.emp)[0]||null;tab='ini';save();render()}
+function go(t){tab=t;render();window.scrollTo(0,0)}
+function add(){const e=E(),v=num($('#v').value),deb=$('#deb').value,cre=$('#cre').value;
+ if(!(v>0))return msg('Informe um valor maior que zero.');
+ if(deb===cre)return msg('Débito e crédito precisam ser contas diferentes.');
+ e.lan.push({id:Date.now(),d:$('#d').value,h:$('#h').value.trim(),deb,cre,v});save();render()}
+function rm(id){const e=E();e.lan=e.lan.filter(l=>l.id!==id);save();render()}
+function addc(){const e=E(),c=$('#nc').value.trim(),n=$('#cn').value.trim(),g=$('#ng').value,r=$('#nr').checked,a=ed!==null?e.contas.find(x=>x.c===ed):null;
+ if(!c||!n)return msg('Informe o código e o nome da conta.');
+ if(e.contas.some(x=>x.c===c&&x!==a))return msg('Já existe uma conta com esse código.');
+ const b=DG.includes(g)?'D':'C',nat=r?(b==='D'?'C':'D'):b;if(a){e.lan.forEach(l=>{if(l.deb===a.c)l.deb=c;if(l.cre===a.c)l.cre=c});Object.assign(a,{c,n,g,nat})}else e.contas.push({c,n,g,nat});ed=null;e.contas.sort((a,b)=>a.c.localeCompare(b.c,'pt',{numeric:true}));save();render()}
+function ex(){const e=E();let id=Date.now();
+ [['2026-01-02','Integralização de capital em dinheiro','1.1.1','3.1',100000],['2026-01-05','Compra de mercadorias a prazo','1.1.4','2.1.1',40000],['2026-01-10','Venda de mercadorias à vista','1.1.1','4.1',60000],['2026-01-10','Baixa do estoque vendido','5.1','1.1.4',25000],['2026-01-10','Impostos sobre a venda','4.2','2.1.3',6000],['2026-01-31','Pagamento de salários','6.1','1.1.1',9000],['2026-01-31','Depreciação do mês','6.3','1.2.2',1000]]
+ .forEach(r=>e.lan.push({id:id++,d:r[0],h:r[1],deb:r[2],cre:r[3],v:r[4]}));save();render()}
+
+/* ---------- Tela inicial ---------- */
+const ICO={
+ lan:'<path d="M12 5v14M5 12h14"/>',
+ est:'<path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+ con:'<path d="M4 6h16M4 12h16M4 18h10"/>',
+ dia:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>',
+ rz:'<path d="M4 7h16M12 7v13"/>',
+ bal:'<path d="M12 4v16M6 20h12M4 8h16"/><path d="M7 8l-3 6h6zM17 8l-3 6h6z"/>',
+ dre:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',
+ bp:'<rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/>',
+ exp:'<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>'
+};
+const COL={lan:'#1c7c4a',est:'#a8692b',con:'#2f6fd0',dia:'#8e3b46',rz:'#6a4fc9',bal:'#0f8b8d',dre:'#d4881e',bp:'#b8861f',exp:'#2f6fd0'};
+const ic=(k,s)=>`<svg viewBox="0 0 24 24" width="${s||28}" height="${s||28}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICO[k]}</svg>`;
+function resumo(e){const m=saldos(e),ll=res(m),A=sec(m,'AC',1,'').t+sec(m,'ANC',1,'').t,P=sec(m,'PC',-1,'').t+sec(m,'PNC',-1,'').t+sec(m,'PL',-1,'',['Resultado do Exercício',ll]).t;
+ return{ll,A,fecha:Math.abs(A-P)<0.005}}
+function app(k,lb,vl,tt){return `<button class="app" onclick="go('${k}')" title="${esc(tt)}" style="--c:${COL[k]}"><span class="tile">${ic(k)}</span><span class="lb">${lb}</span>${vl?`<span class="vl">${esc(vl)}</span>`:''}</button>`}
+function poster(e){const r=e?resumo(e):null,n=e?e.lan.length:0,nome=e?e.nome:'Sua empresa',
+ ini=esc(nome.replace(/[^A-Za-zÀ-ÿ0-9 ]/g,'').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase()||'?'),
+ ll=r?r.ll:0,neg=ll<0,st=!e?['aguardando','']:!n?['sem lançamentos','']:r.fecha?['balanço fecha','ok']:['não fecha','bad'];
+ return `<div class="poster"><i class="tape"></i><i class="tape"></i><div class="pt">PROCURADA</div><div class="pm">viva e, de preferência, no azul</div><div class="ph"><span>${ini}</span></div><div class="pn">${esc(nome)}</div><div class="pl">${neg?'prejuízo':'recompensa'}</div><div class="pv ${neg?'neg2':''}">${R(Math.abs(ll))}</div><div class="pa">tesouro (ativo): ${R(r?r.A:0)}</div><div class="stamp ${st[1]}">${st[0]}</div></div>`}
+function stage(e){const h=new Date().getHours(),sd=h<5?'boa madrugada':h<12?'bom dia':h<18?'boa tarde':'boa noite';
+ const extra=!e?'<p class="mono sub">crie sua primeira empresa no topo da página</p>':!e.lan.length?`<p class="cta"><button onclick="go('lan')">fazer o primeiro lançamento</button></p>`:'';
+ return `<section class="stage"><div class="dots" aria-hidden="true"></div><div class="sl"><p class="mono hi">${sd},</p><h2 class="big">Lançamentos viram</h2><p class="mono sub">contabilidade</p></div><div class="sr"><h2 class="big pix">Balanço</h2><p class="mono sub">agora: razonetes, DRE e balanço</p></div><div class="sp">${poster(e)}${extra}</div></section>`}
+function tIni(e){const n=e.lan.length,ne=(e.est&&e.est.itens||[]).length,pl=(k,s,p)=>k+(k===1?s:p);
+ return stage(e)
+ +`<p class="mono cap">lançar e organizar</p><div class="apps">`
+ +app('lan','Lançamentos',n?n+pl(n,' lançamento',' lançamentos'):'nenhum ainda','Registre cada operação: débito, crédito e valor')
+ +app('est','Estoque',ne?ne+pl(ne,' mercadoria',' mercadorias'):'nenhuma ainda','PEPS, UEPS ou média ponderada')
+ +app('con','Contas',e.contas.length+' contas','Plano de contas: crie e edite contas')
+ +`</div><div class="dockw"><p class="mono cap">conferir e entregar</p><nav class="dock" aria-label="Relatórios">`
+ +app('dia','Diário',0,'Lançamentos em ordem de data')+app('rz','Razonetes',0,'Cada conta em T, com saldo')+app('bal','Balancete',0,'Confira se débitos e créditos batem')+app('dre','DRE',0,'Receitas, custos e despesas até o resultado')+app('bp','Balanço',0,'Ativo, passivo e patrimônio líquido')+app('exp','Exportar PDF',0,'Gere os relatórios em PDF')
+ +`</nav></div>`}
+
+function tLan(e){const o=e.contas.map(a=>`<option value="${esc(a.c)}">${esc(a.c)} · ${esc(a.n)}</option>`).join('');
+ const rows=e.lan.map((l,i)=>`<tr><td>${i+1}</td><td>${fd(l.d)}</td><td>${esc(l.h)}</td><td>${nm(e,l.deb)}</td><td>${nm(e,l.cre)}</td><td class="n">${R(l.v)}</td><td><button class="ghost" onclick="rm(${l.id})" aria-label="Excluir lançamento ${i+1}">Excluir</button></td></tr>`).join('');
+ return `<div class="card"><div class="form">
+ <label>Data<input type="date" id="d" value="${new Date().toISOString().slice(0,10)}"></label>
+ <label>Histórico<input id="h" placeholder="Ex.: Compra de mercadorias"></label>
+ <label>Conta debitada<select id="deb">${o}</select></label>
+ <label>Conta creditada<select id="cre">${o}</select></label>
+ <label>Valor (R$)<input id="v" inputmode="decimal" placeholder="1.500,00"></label>
+ <button onclick="add()">Lançar</button></div><p id="msg"></p></div>
+ <div class="card"><table><tr><th>Nº</th><th>Data</th><th>Histórico</th><th>Débito</th><th>Crédito</th><th class="n">Valor</th><th></th></tr>${rows||'<tr><td colspan="7" class="mut">Nenhum lançamento ainda. Registre o primeiro acima ou carregue um exemplo.</td></tr>'}</table>
+ ${e.lan.length?'':'<p><button class="ghost" onclick="ex()">Carregar lançamentos de exemplo</button></p>'}</div>
+ 
+ 
+ `}
+
+function tRz(e){const m=saldos(e),l=Object.values(m).filter(x=>x.md.length||x.mc.length);
+ if(!l.length)return '<div class="card">Os razonetes aparecem aqui assim que você fizer lançamentos.</div>';
+ return `<div class="rzs">`+l.map(x=>`<div class="rz"><h4>${esc(x.a.c)} · ${esc(x.a.n)}</h4><div class="g"><div class="l">${x.md.map(v=>`<div>${R(v)}</div>`).join('')}</div><div class="r">${x.mc.map(v=>`<div>${R(v)}</div>`).join('')}</div></div>
+ <div class="s ${x.s<0?'neg':''}">Saldo ${x.s>=0?(x.a.nat==='D'?'devedor':'credor'):(x.a.nat==='D'?'credor':'devedor')}: ${R(Math.abs(x.s))}</div><small>Débito à esquerda, crédito à direita</small></div>`).join('')+`</div>`}
+
+function tBal(e){const m=saldos(e),l=Object.values(m).filter(x=>x.d||x.c);let D=0,C=0,SD=0,SC=0;
+ const rows=l.map(x=>{const s=x.d-x.c;D+=x.d;C+=x.c;s>=0?SD+=s:SC-=s;return `<tr><td>${esc(x.a.c)}</td><td>${esc(x.a.n)}</td><td class="n">${R(x.d)}</td><td class="n">${R(x.c)}</td><td class="n">${s>0?R(s):''}</td><td class="n">${s<0?R(-s):''}</td></tr>`}).join('');
+ return `<div class="card"><table><tr><th>Conta</th><th>Nome</th><th class="n">Débitos</th><th class="n">Créditos</th><th class="n">Saldo devedor</th><th class="n">Saldo credor</th></tr>${rows||'<tr><td colspan="6" class="mut">Sem movimentação.</td></tr>'}
+ <tr class="tot"><td colspan="2"><b>Totais</b></td><td class="n"><b>${R(D)}</b></td><td class="n"><b>${R(C)}</b></td><td class="n"><b>${R(SD)}</b></td><td class="n"><b>${R(SC)}</b></td></tr></table>
+ <p class="${Math.abs(SD-SC)<0.005?'ok':'bad'}">${Math.abs(SD-SC)<0.005?'Balancete fechado: débitos e créditos conferem.':'Atenção: saldos devedores e credores não conferem.'}</p></div>`}
+
+function tDre(e){const m=saldos(e),a=sec(m,'REC',-1,'Receita Bruta'),b=sec(m,'DED',1,'(-) Deduções da Receita'),c=sec(m,'CMV',1,'(-) Custos (CMV/CPV/CSP)'),d=sec(m,'DESP',1,'(-) Despesas Operacionais'),i=sec(m,'IR',1,'(-) IR e CSLL');
+ const rl=a.t-b.t,lb=rl-c.t,ro=lb-d.t,ll=ro-i.t;
+ return `<div class="card"><table class="fin">${a.h}${b.h}${tot('= Receita Líquida',rl)}${c.h}${tot('= Lucro Bruto',lb)}${d.h}${tot('= Resultado antes do IR e CSLL',ro)}${i.h}${tot(ll>=0?'= Lucro Líquido do Exercício':'= Prejuízo do Exercício',ll)}</table></div>`}
+
+function tBp(e){const m=saldos(e),ll=res(m),ac=sec(m,'AC',1,'Ativo Circulante'),anc=sec(m,'ANC',1,'Ativo Não Circulante'),pc=sec(m,'PC',-1,'Passivo Circulante'),pnc=sec(m,'PNC',-1,'Passivo Não Circulante'),pl=sec(m,'PL',-1,'Patrimônio Líquido',['Resultado do Exercício',ll]);
+ const A=ac.t+anc.t,P=pc.t+pnc.t+pl.t,df=A-P,ok=Math.abs(df)<0.005;
+ return `<div class="grid2"><div class="card"><table class="fin">${ac.h}${anc.h}${tot('TOTAL DO ATIVO',A)}</table></div>
+ <div class="card"><table class="fin">${pc.h}${pnc.h}${pl.h}${tot('TOTAL DO PASSIVO + PL',P)}</table></div></div>
+ <p class="${ok?'ok':'bad'}">${ok?'Ativo = Passivo + Patrimônio Líquido. O balanço fecha.':'O balanço não fecha. Diferença: '+R(df)+'. Confira os lançamentos.'}</p>`}
+
+const P=v=>R(v).split(String.fromCharCode(160)).join(' ');
+const NM={dia:'Diário',rz:'Razonetes',bal:'Balancete',dre:'DRE',bp:'Balanço Patrimonial'};
+const sg=a=>a?SG[a.g]:'';
+const cnm=(a,c)=>a?esc(a.c)+' · '+esc(a.n):esc(c);
+const jrows=e=>e.lan.slice().sort((a,b)=>(a.d||'').localeCompare(b.d||'')||a.id-b.id).map(l=>({l,A:e.contas.find(x=>x.c===l.deb),B:e.contas.find(x=>x.c===l.cre)}));
+function edc(i){const e=E();ed=e.contas[i].c;tab='con';render();window.scrollTo(0,0)}
+function cancel(){ed=null;render()}
+function delc(i){const e=E(),c=e.contas[i].c,n=e.lan.filter(l=>l.deb===c||l.cre===c).length;
+ if(n)return msg('A conta '+c+' tem '+n+' lançamento(s). Exclua ou altere esses lançamentos antes de apagar a conta.');
+ e.contas.splice(i,1);if(ed===c)ed=null;save();render()}
+function selAll(v){Object.keys(sel).forEach(k=>sel[k]=!!v);render()}
+
+function tDia(e){const r=jrows(e);if(!r.length)return '<div class="card">O diário aparece aqui conforme você faz lançamentos.</div>';let T=0;
+ return `<div class="card"><table class="jr"><tr><th>Data</th><th>Subgrupo</th><th>Conta</th><th class="n">Débito</th><th class="n">Crédito</th></tr>`+r.map(({l,A,B})=>{T+=l.v;
+ return `<tr class="first"><td>${fd(l.d)}</td><td>${sg(A)}</td><td>${cnm(A,l.deb)}</td><td class="n">${R(l.v)}</td><td></td></tr><tr><td></td><td>${sg(B)}</td><td class="ind">${cnm(B,l.cre)}</td><td></td><td class="n">${R(l.v)}</td></tr>`+(l.h?`<tr><td></td><td colspan="4" class="h">${esc(l.h)}</td></tr>`:'')}).join('')
+ +`<tr class="tot"><td colspan="3"><b>Totais</b></td><td class="n"><b>${R(T)}</b></td><td class="n"><b>${R(T)}</b></td></tr></table></div>`}
+
+function tCon(e){const a=ed!==null?e.contas.find(x=>x.c===ed):null,g0=a?a.g:'AC',red=a?a.nat!==(DG.includes(a.g)?'D':'C'):false;
+ const rows=e.contas.map((x,i)=>{const u=e.lan.filter(l=>l.deb===x.c||l.cre===x.c).length;
+ return `<tr><td>${esc(x.c)}</td><td>${esc(x.n)}</td><td>${SG[x.g]==='DRE'?'DRE · ':''}${G[x.g]}</td><td>${x.nat==='D'?'Devedora':'Credora'}</td><td class="n">${u}</td><td class="n"><button class="ghost" onclick="edc(${i})">Editar</button> <button class="ghost" onclick="delc(${i})">Excluir</button></td></tr>`}).join('');
+ return `<div class="card"><b>${a?'Editar conta':'Nova conta'}</b><div class="form" style="margin-top:10px"><label>Código<input id="nc" value="${a?esc(a.c):''}" placeholder="6.5"></label><label>Nome<input id="cn" value="${a?esc(a.n):''}" placeholder="Despesa com Energia"></label>
+ <label>Grupo<select id="ng">${Object.entries(G).map(([k,v])=>`<option value="${k}"${k===g0?' selected':''}>${v}</option>`).join('')}</select></label>
+ <label class="chk"><input type="checkbox" id="nr"${red?' checked':''}> Conta redutora</label>
+ <button onclick="addc()">${a?'Salvar alterações':'Adicionar conta'}</button>${a?'<button class="ghost" onclick="cancel()">Cancelar</button>':''}</div><p id="msg"></p></div>
+ <div class="card"><table><tr><th>Código</th><th>Nome</th><th>Grupo</th><th>Natureza</th><th class="n">Lançamentos</th><th></th></tr>${rows}</table></div>`}
+
+function tExp(e){return `<div class="card"><p>Escolha o que entra no PDF. Cada item começa em uma página nova.</p>`
+ +Object.keys(NM).map(k=>`<label class="chk"><input type="checkbox" ${sel[k]?'checked':''} onchange="sel['${k}']=this.checked"> ${NM[k]}</label>`).join('')
+ +`<p><button class="ghost" onclick="selAll(1)">Marcar tudo</button> <button class="ghost" onclick="selAll(0)">Limpar</button></p><p><button onclick="exportar(Object.keys(sel).filter(k=>sel[k]))">Gerar PDF</button></p><p id="msg2"></p></div>`}
+
+const GR=[20,90,80],ZB=[225,236,230];
+const at=(doc,o)=>doc.autoTable(Object.assign({margin:{left:14,right:14},styles:{fontSize:9,cellPadding:1.8},headStyles:{fillColor:GR}},o));
+const rw=(l,v,b)=>{const s=b?{fontStyle:'bold',fillColor:ZB}:{};return[{content:b?l:'     '+l,styles:s},{content:P(v),styles:Object.assign({halign:'right'},s)}]};
+const sr=(s,t)=>[rw(t,s.t,1)].concat(s.it.map(i=>rw(i[0],i[1])));
+const RT={halign:'right'};
+const PDF={
+ dia(doc,e){const b=[];jrows(e).forEach(({l,A,B})=>{b.push([fd(l.d),sg(A),A?A.c+' '+A.n:l.deb,P(l.v),'']);b.push(['',sg(B),'     '+(B?B.c+' '+B.n:l.cre),'',P(l.v)]);
+  if(l.h)b.push([{content:l.h,colSpan:5,styles:{fontStyle:'italic',textColor:[110,110,110],fontSize:8}}])});
+  at(doc,{startY:30,head:[['Data','Subgrupo','Conta','Débito','Crédito']],body:b,columnStyles:{3:RT,4:RT}})},
+ rz(doc,e,m){const l=Object.values(m).filter(x=>x.md.length||x.mc.length);if(!l.length)return doc.text('Sem lançamentos.',14,32);
+  const W=58,Gp=4;let y=30,i=0;
+  while(i<l.length){const row=l.slice(i,i+3),h=22+5*Math.max(...row.map(x=>Math.max(x.md.length,x.mc.length)));
+   if(y+h>285){doc.addPage();y=20}
+   row.forEach((x,j)=>{const X=14+j*(W+Gp),mid=X+W/2;doc.setDrawColor(90);doc.setLineWidth(.2);doc.rect(X,y,W,h);
+    doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text(doc.splitTextToSize(x.a.c+' '+x.a.n,W-4)[0],mid,y+5,{align:'center'});
+    doc.setLineWidth(.5);doc.line(X+2,y+8,X+W-2,y+8);doc.line(mid,y+8,mid,y+h-9);
+    doc.setFont('helvetica','normal');
+    x.md.forEach((v,k)=>doc.text(P(v),mid-2,y+13+k*5,{align:'right'}));x.mc.forEach((v,k)=>doc.text(P(v),mid+2,y+13+k*5));
+    doc.setLineWidth(.2);doc.line(X+2,y+h-8,X+W-2,y+h-8);doc.setFont('helvetica','bold');
+    doc.text('Saldo '+(x.s>=0?(x.a.nat==='D'?'devedor':'credor'):(x.a.nat==='D'?'credor':'devedor'))+': '+P(Math.abs(x.s)),mid,y+h-3,{align:'center'})});
+   y+=h+Gp;i+=3}},
+ bal(doc,e,m){let D=0,C=0,SD=0,SC=0;const b=Object.values(m).filter(x=>x.d||x.c).map(x=>{const s=x.d-x.c;D+=x.d;C+=x.c;s>=0?SD+=s:SC-=s;return[x.a.c,x.a.n,P(x.d),P(x.c),s>0?P(s):'',s<0?P(-s):'']});
+  b.push([{content:'Totais',colSpan:2,styles:{fontStyle:'bold'}},P(D),P(C),P(SD),P(SC)]);
+  at(doc,{startY:30,head:[['Conta','Nome','Débitos','Créditos','Saldo devedor','Saldo credor']],body:b,columnStyles:{2:RT,3:RT,4:RT,5:RT}})},
+ dre(doc,e,m){const a=sec(m,'REC',-1,''),b=sec(m,'DED',1,''),c=sec(m,'CMV',1,''),d=sec(m,'DESP',1,''),i=sec(m,'IR',1,'');
+  const rl=a.t-b.t,lb=rl-c.t,ro=lb-d.t,ll=ro-i.t;
+  at(doc,{startY:30,body:[].concat(sr(a,'Receita Bruta'),sr(b,'(-) Deduções da Receita'),[rw('= Receita Líquida',rl,1)],sr(c,'(-) Custos (CMV/CPV/CSP)'),[rw('= Lucro Bruto',lb,1)],sr(d,'(-) Despesas Operacionais'),[rw('= Resultado antes do IR e CSLL',ro,1)],sr(i,'(-) IR e CSLL'),[rw(ll>=0?'= Lucro Líquido do Exercício':'= Prejuízo do Exercício',ll,1)])})},
+ bp(doc,e,m){const ll=res(m),ac=sec(m,'AC',1,''),anc=sec(m,'ANC',1,''),pc=sec(m,'PC',-1,''),pnc=sec(m,'PNC',-1,''),pl=sec(m,'PL',-1,'',['Resultado do Exercício',ll]);
+  const A=ac.t+anc.t,Q=pc.t+pnc.t+pl.t;
+  at(doc,{startY:30,body:[].concat(sr(ac,'Ativo Circulante'),sr(anc,'Ativo Não Circulante'),[rw('TOTAL DO ATIVO',A,1)],sr(pc,'Passivo Circulante'),sr(pnc,'Passivo Não Circulante'),sr(pl,'Patrimônio Líquido'),[rw('TOTAL DO PASSIVO + PL',Q,1)])});
+  doc.setFontSize(9);doc.text(Math.abs(A-Q)<0.005?'Ativo = Passivo + Patrimônio Líquido. O balanço fecha.':'O balanço não fecha. Diferença: '+P(A-Q),14,doc.lastAutoTable.finalY+8)}
+};
+function m2(t,ok){const p=$('#msg2');if(p){p.textContent=t;p.className=ok?'ok':'bad'}}
+async function exportar(keys){
+ if(!keys.length)return m2('Marque ao menos um relatório para exportar.');
+ const J=window.jspdf&&window.jspdf.jsPDF;if(!J)return m2('O gerador de PDF não carregou. Verifique a conexão e recarregue a página.');
+  const e=E(),m=saldos(e),doc=new J({unit:'mm',format:'a4'}),hoje=new Date().toLocaleDateString('pt-BR');
+ if(!doc.autoTable)return m2('O gerador de tabelas do PDF não carregou. Recarregue a página.');
+ try{keys.forEach((k,i)=>{if(i)doc.addPage();doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text(e.nome,14,16);doc.setFontSize(11);doc.text(NM[k],14,23);
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text('Gerado em '+hoje,196,16,{align:'right'});PDF[k](doc,e,m)})}catch(x){return m2('Erro ao montar o PDF.')}
+ const fn=(e.nome.replace(/[^A-Za-z0-9À-ÿ _-]+/g,'').trim()||'empresa')+' - '+(keys.length>1?'relatorios':NM[keys[0]])+'.pdf';
+ try{doc.save(fn);m2('PDF gerado.',1)}catch(x){m2('Não foi possível gerar o PDF.')}}
+
+const MT={PEPS:'PEPS - primeiro a entrar, primeiro a sair',UEPS:'UEPS - último a entrar, primeiro a sair',MPM:'MPM - média ponderada móvel'};
+const nf=v=>v.toLocaleString('pt-BR',{maximumFractionDigits:3});
+const ord=m=>m.slice().sort((a,b)=>(a.d||'').localeCompare(b.d||'')||a.id-b.id);
+const okq=m=>{let q=0;return ord(m).every(x=>(q+=x.tipo==='E'?x.q:-x.q)>-1e-9)};
+function calc(it,mt){mt=mt||it.mt;let L=[],q=0,t=0,cmv=0,rec=0,sold=0;const rows=[];
+ ord(it.mov).forEach(x=>{
+  if(x.tipo==='E'){const tot=x.q*x.v;q+=x.q;t+=tot;if(mt==='MPM')L=[{q,c:t/q}];else L.push({q:x.q,c:x.v});rows.push({x,e:tot,sd:{q,c:t/q,t}})}
+  else{let cost=0;const det=[];
+   if(mt==='MPM'){const cu=q?t/q:0;cost=x.q*cu;det.push(nf(x.q)+' × '+P(cu))}
+   else{let r=x.q;while(r>1e-9&&L.length){const k=mt==='PEPS'?0:L.length-1,l=L[k],u=Math.min(l.q,r);cost+=u*l.c;det.push(nf(u)+' × '+P(l.c));l.q-=u;r-=u;if(l.q<=1e-9)L.splice(k,1)}}
+   q-=x.q;t-=cost;if(q<=1e-9){q=0;t=0;L=[]}else if(mt==='MPM')L=[{q,c:t/q}];
+   const r2=x.q*x.v;cmv+=cost;rec+=r2;sold+=x.q;
+   rows.push({x,s:{c:cost/x.q,t:cost,det:det.join(' + ')},vd:{r:r2,l:r2-cost},sd:{q,c:q?t/q:0,t}})}});
+ return{rows,L,q,t,cmv,rec,sold}}
+const cur=e=>e.est.itens.find(i=>i.id===e.est.cur)||e.est.itens[0];
+function eNovo(){const n=$('#einome').value.trim();if(!n)return msg('Informe o nome da mercadoria.');const e=E();e.est=e.est||{itens:[],cur:null};const id=Date.now();e.est.itens.push({id,nome:n,mt:$('#eimt').value,mov:[]});e.est.cur=id;save();render()}
+function eSel(v){E().est.cur=+v;save();render()}
+function eMt(v){cur(E()).mt=v;save();render()}
+function eDel(b){if(!armed){armed=true;b.textContent='Confirmar exclusão';return}armed=false;const s=E().est,it=cur(E());s.itens=s.itens.filter(i=>i!==it);s.cur=null;save();render()}
+function eAdd(){const it=cur(E()),q=num($('#eq').value),v=num($('#ev').value),tipo=$('#etp').value,d=$('#edt').value;
+ if(!(q>0))return msg('Informe uma quantidade maior que zero.');
+ if(!(v>=0))return msg('Informe o valor unitário.');
+ const m=it.mov.concat([{id:Date.now(),d,tipo,q,v}]);
+ if(!okq(m))return msg('Estoque insuficiente: a saída é maior que a quantidade disponível nessa data.');
+ it.mov=m;save();render()}
+function eRm(id){const it=cur(E()),m=it.mov.filter(x=>x.id!==id);
+ if(!okq(m))return msg('Não dá para excluir: as saídas seguintes ficariam sem estoque.');
+ it.mov=m;save();render()}
+
+function tEst(e){e.est=e.est||{itens:[],cur:null};const es=e.est,it=cur(e),mg='<p id="msg"></p>';
+ let h=`<div class="card"><b>Nova mercadoria</b><div class="form" style="margin-top:10px"><label>Nome<input id="einome" placeholder="Ex.: Camiseta básica"></label><label>Método de custeio<select id="eimt">${Object.keys(MT).map(k=>`<option value="${k}">${MT[k]}</option>`).join('')}</select></label><button onclick="eNovo()">Criar mercadoria</button></div>${it?'':mg}</div>`;
+ if(!it)return h+'<div class="card">Cadastre uma mercadoria para controlar entradas, saídas e saldo. Você escolhe o método (PEPS, UEPS ou MPM) e pode trocá-lo depois para comparar os resultados.</div>';
+ const c=calc(it),hoje=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+ h+=`<div class="card"><div class="form"><label>Mercadoria<select onchange="eSel(this.value)">${es.itens.map(i=>`<option value="${i.id}"${i.id===it.id?' selected':''}>${esc(i.nome)}</option>`).join('')}</select></label><label>Método de custeio<select onchange="eMt(this.value)">${Object.keys(MT).map(k=>`<option value="${k}"${k===it.mt?' selected':''}>${MT[k]}</option>`).join('')}</select></label><button class="ghost" onclick="eDel(this)">Excluir mercadoria</button></div></div>`;
+ h+=`<div class="stats">`+[['Em estoque',nf(c.q)+' un.'],['Valor em estoque',R(c.t)],['Vendidas',nf(c.sold)+' un.'],['Preço médio de venda',c.sold?R(c.rec/c.sold):'-'],['Receita de vendas',R(c.rec)],['CMV',R(c.cmv)],['Lucro bruto',R(c.rec-c.cmv)]].map(([a,b])=>`<div class="stat"><span>${a}</span><b>${b}</b></div>`).join('')+`</div>`;
+ h+=`<div class="card"><div class="form"><label>Data<input type="date" id="edt" value="${hoje}"></label><label>Operação<select id="etp"><option value="E">Entrada (compra)</option><option value="S">Saída (venda)</option></select></label><label>Quantidade<input id="eq" inputmode="decimal" placeholder="10"></label><label>Valor unitário (R$)<input id="ev" inputmode="decimal" placeholder="5,00"></label><button onclick="eAdd()">Registrar</button></div>${mg}<p class="mut" style="font-size:13px;margin:6px 0 0">Na entrada, informe o custo unitário da compra. Na saída, informe o preço unitário de venda; o custo da saída é calculado pelo método escolhido.</p></div>`;
+ const em=n=>`<td colspan="${n}"></td>`,sm='display:block;white-space:normal;min-width:120px';
+ const rows=c.rows.map(r=>{const x=r.x,en=x.tipo==='E';
+  return `<tr><td>${fd(x.d)}</td><td>${en?'Entrada':'Saída'}</td>`
+  +(en?`<td class="n">${nf(x.q)}</td><td class="n">${R(x.v)}</td><td class="n">${R(r.e)}</td>${em(3)}`:`${em(3)}<td class="n">${nf(x.q)}</td><td class="n">${R(r.s.c)}</td><td class="n">${R(r.s.t)}<small class="mut" style="${sm}">${esc(r.s.det)}</small></td>`)
+  +`<td class="n">${nf(r.sd.q)}</td><td class="n">${R(r.sd.c)}</td><td class="n">${R(r.sd.t)}</td>`
+  +(en?em(3):`<td class="n">${R(x.v)}</td><td class="n">${R(r.vd.r)}</td><td class="n ${r.vd.l<0?'neg':''}">${R(r.vd.l)}</td>`)
+  +`<td><button class="ghost" onclick="eRm(${x.id})" aria-label="Excluir movimentação">✕</button></td></tr>`}).join('');
+ h+=`<div class="card"><table class="fx"><tr><th rowspan="2">Data</th><th rowspan="2">Operação</th><th colspan="3" class="c">Entradas</th><th colspan="3" class="c">Saídas (custo)</th><th colspan="3" class="c">Saldo</th><th colspan="3" class="c">Vendas</th><th rowspan="2"></th></tr>
+ <tr><th class="n">Qtd</th><th class="n">Custo un.</th><th class="n">Total</th><th class="n">Qtd</th><th class="n">Custo un.</th><th class="n">CMV</th><th class="n">Qtd</th><th class="n">Custo un.</th><th class="n">Total</th><th class="n">Preço un.</th><th class="n">Receita</th><th class="n">Lucro bruto</th></tr>
+ ${rows||'<tr><td colspan="15" class="mut">Nenhuma movimentação ainda. Registre a primeira entrada acima.</td></tr>'}</table></div>`;
+ const lay=c.L.length?c.L.map((l,i)=>`<tr><td>${it.mt==='MPM'?'Custo médio':'Lote '+(i+1)}</td><td class="n">${nf(l.q)}</td><td class="n">${R(l.c)}</td><td class="n">${R(l.q*l.c)}</td></tr>`).join(''):'<tr><td colspan="4" class="mut">Estoque zerado.</td></tr>';
+ const cm=['PEPS','UEPS','MPM'].map(k=>[k,calc(it,k)]).map(([k,v])=>`<tr${k===it.mt?' style="font-weight:600"':''}><td>${k}</td><td class="n">${R(v.t)}</td><td class="n">${R(v.cmv)}</td><td class="n">${R(v.rec-v.cmv)}</td></tr>`).join('');
+ h+=`<div class="grid2"><div class="card"><b>${it.mt==='MPM'?'Estoque atual':'Lotes em estoque (do mais antigo ao mais novo)'}</b><table style="margin-top:8px"><tr><th></th><th class="n">Qtd</th><th class="n">Custo un.</th><th class="n">Total</th></tr>${lay}</table></div>
+ <div class="card"><b>Comparação entre os métodos</b><table style="margin-top:8px"><tr><th>Método</th><th class="n">Estoque final</th><th class="n">CMV</th><th class="n">Lucro bruto</th></tr>${cm}</table></div></div>`;
+ return h}
+
+function bkp(){const b=new Blob([JSON.stringify(S)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='backup-razao-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function rst(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d||!d.emp)throw 0;Object.assign(S.emp,d.emp);S.cur=S.cur&&S.emp[S.cur]?S.cur:Object.keys(S.emp)[0]||null;save();render();alert('Backup importado: '+Object.keys(d.emp).length+' empresa(s).')}catch(x){alert('Arquivo de backup inválido.')}};r.readAsText(f);inp.value=''}
+function render(){armed=false;const ids=Object.keys(S.emp);
+ $('#top').innerHTML=(ids.length?`<select aria-label="Empresa" onchange="S.cur=this.value;tab='ini';save();render()">${ids.map(i=>`<option value="${i}"${i===S.cur?' selected':''}>${esc(S.emp[i].nome)}</option>`).join('')}</select>`:'')+`<input id="nn" placeholder="Nome da empresa" aria-label="Nome da nova empresa"><button onclick="novo()">Criar empresa</button>`+(S.cur?`<button class="ghost" onclick="del(this)">Excluir empresa</button>`:'');
+ if(!S.cur){$('#main').innerHTML=stage(null);return}
+ const T={ini:['Início',tIni],lan:['Lançamentos',tLan],dia:['Diário',tDia],rz:['Razonetes',tRz],bal:['Balancete',tBal],dre:['DRE',tDre],bp:['Balanço Patrimonial',tBp],est:['Estoque',tEst],con:['Contas',tCon],exp:['Exportar PDF',tExp]};
+ $('#main').innerHTML=(tab==='ini'?'':`<div class="tabs" role="tablist">${Object.entries(T).map(([k,v])=>`<button role="tab" class="${k===tab?'on':''}" onclick="go('${k}')">${v[0]}</button>`).join('')}</div>`)+(['dia','rz','bal','dre','bp'].includes(tab)?`<div class="bar"><button class="ghost" onclick="exportar(['${tab}'])">Exportar em PDF</button></div><p id="msg2"></p>`:'')+T[tab][1](E())}
+$('#upd').textContent='atualizado em '+new Date().toLocaleDateString('pt-BR',{month:'2-digit',year:'2-digit'});
+render();
+</script></body></html>
