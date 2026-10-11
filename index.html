@@ -177,7 +177,7 @@ function poster(e){const r=e?resumo(e):null,n=e?e.lan.length:0,nome=e?e.nome:'Su
  return `<div class="poster"><i class="tape"></i><i class="tape"></i><div class="pt">PROCURADA</div><div class="pm">viva e, de preferência, no azul</div><div class="ph"><span>${ini}</span></div><div class="pn">${esc(nome)}</div><div class="pl">${neg?'prejuízo':'recompensa'}</div><div class="pv ${neg?'neg2':''}">${R(Math.abs(ll))}</div><div class="pa">tesouro (ativo): ${R(r?r.A:0)}</div><div class="stamp ${st[1]}">${st[0]}</div></div>`}
 function stage(e){const h=new Date().getHours(),sd=h<5?'boa madrugada':h<12?'bom dia':h<18?'boa tarde':'boa noite';
  const extra=!e?'<p class="mono sub">crie sua primeira empresa no topo da página</p>':!e.lan.length?`<p class="cta"><button onclick="go('lan')">fazer o primeiro lançamento</button></p>`:'';
- return `<section class="stage"><div class="dots" aria-hidden="true"></div><div class="sl"><p class="mono hi">${sd},</p><h2 class="big">Lançamentos viram</h2><p class="mono sub">contabilidade</p></div><div class="sr"><h2 class="big pix">Balanço</h2><p class="mono sub">agora: razonetes, DRE e balanço</p></div><div class="sp">${poster(e)}${extra}</div></section>`}
+ return `<section class="stage"><div class="dots" aria-hidden="true"></div><div class="sl"><p class="mono hi">${sd},</p><h2 class="big">Lançamentos viram</h2><p class="mono sub">contabilidade</p></div><div class="sr"><h2 class="big pix">Balanço</h2><p class="mono sub"></p></div><div class="sp">${poster(e)}${extra}</div></section>`}
 function tIni(e){const n=e.lan.length,ne=(e.est&&e.est.itens||[]).length,pl=(k,s,p)=>k+(k===1?s:p);
  return stage(e)
  +`<p class="mono cap">lançar e organizar</p><div class="apps">`
