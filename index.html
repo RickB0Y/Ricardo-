@@ -129,8 +129,10 @@ const num=s=>{s=String(s).trim();return s.includes(',')?parseFloat(s.replace(/\.
 const nm=(e,c)=>{const a=e.contas.find(x=>x.c===c);return a?a.c+' · '+esc(a.n):esc(c)};
 const msg=t=>{$('#msg').textContent=t};
 
-function saldos(e){const m={};e.contas.forEach(a=>m[a.c]={a,d:0,c:0,md:[],mc:[]});
- e.lan.forEach(l=>{if(m[l.deb]){m[l.deb].d+=l.v;m[l.deb].md.push(l.v)}if(m[l.cre]){m[l.cre].c+=l.v;m[l.cre].mc.push(l.v)}});
+function saldos(e,sf){const m={};e.contas.forEach(a=>m[a.c]={a,d:0,c:0,md:[],mc:[]});
+ if(sf||e.modo==='sf'){const f=e.sf||{};Object.values(m).forEach(x=>{const v=f[x.a.c]||0;if(!v)return;
+  const deb=(x.a.nat==='D')===(v>0),w=Math.abs(v);if(deb){x.d=w;x.md.push(w)}else{x.c=w;x.mc.push(w)}})}
+ else e.lan.forEach(l=>{if(m[l.deb]){m[l.deb].d+=l.v;m[l.deb].md.push(l.v)}if(m[l.cre]){m[l.cre].c+=l.v;m[l.cre].mc.push(l.v)}});
  Object.values(m).forEach(x=>x.s=x.a.nat==='D'?x.d-x.c:x.c-x.d);return m}
 const res=m=>Object.values(m).reduce((s,x)=>{const g=x.a.g;return g==='REC'?s+x.c-x.d:DG.slice(2).includes(g)?s-(x.d-x.c):s},0);
 function sec(m,g,sg,title,extra){const it=Object.values(m).filter(x=>x.a.g===g&&(x.d||x.c)).map(x=>[x.a.n,sg*(x.d-x.c)]);
@@ -149,7 +151,7 @@ function rm(id){const e=E();e.lan=e.lan.filter(l=>l.id!==id);save();render()}
 function addc(){const e=E(),c=$('#nc').value.trim(),n=$('#cn').value.trim(),g=$('#ng').value,r=$('#nr').checked,a=ed!==null?e.contas.find(x=>x.c===ed):null;
  if(!c||!n)return msg('Informe o código e o nome da conta.');
  if(e.contas.some(x=>x.c===c&&x!==a))return msg('Já existe uma conta com esse código.');
- const b=DG.includes(g)?'D':'C',nat=r?(b==='D'?'C':'D'):b;if(a){e.lan.forEach(l=>{if(l.deb===a.c)l.deb=c;if(l.cre===a.c)l.cre=c});Object.assign(a,{c,n,g,nat})}else e.contas.push({c,n,g,nat});ed=null;e.contas.sort((a,b)=>a.c.localeCompare(b.c,'pt',{numeric:true}));save();render()}
+ const b=DG.includes(g)?'D':'C',nat=r?(b==='D'?'C':'D'):b;if(a){if(e.sf&&e.sf[a.c]!==undefined&&a.c!==c){e.sf[c]=e.sf[a.c];delete e.sf[a.c]}e.lan.forEach(l=>{if(l.deb===a.c)l.deb=c;if(l.cre===a.c)l.cre=c});Object.assign(a,{c,n,g,nat})}else e.contas.push({c,n,g,nat});ed=null;e.contas.sort((a,b)=>a.c.localeCompare(b.c,'pt',{numeric:true}));save();render()}
 function ex(){const e=E();let id=Date.now();
  [['2026-01-02','Integralização de capital em dinheiro','1.1.1','3.1',100000],['2026-01-05','Compra de mercadorias a prazo','1.1.4','2.1.1',40000],['2026-01-10','Venda de mercadorias à vista','1.1.1','4.1',60000],['2026-01-10','Baixa do estoque vendido','5.1','1.1.4',25000],['2026-01-10','Impostos sobre a venda','4.2','2.1.3',6000],['2026-01-31','Pagamento de salários','6.1','1.1.1',9000],['2026-01-31','Depreciação do mês','6.3','1.2.2',1000]]
  .forEach(r=>e.lan.push({id:id++,d:r[0],h:r[1],deb:r[2],cre:r[3],v:r[4]}));save();render()}
@@ -159,6 +161,7 @@ const ICO={
  lan:'<path d="M12 5v14M5 12h14"/>',
  est:'<path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
  con:'<path d="M4 6h16M4 12h16M4 18h10"/>',
+ sf:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',
  dia:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>',
  rz:'<path d="M4 7h16M12 7v13"/>',
  bal:'<path d="M12 4v16M6 20h12M4 8h16"/><path d="M7 8l-3 6h6zM17 8l-3 6h6z"/>',
@@ -166,22 +169,23 @@ const ICO={
  bp:'<rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/>',
  exp:'<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>'
 };
-const COL={lan:'#1c7c4a',est:'#a8692b',con:'#2f6fd0',dia:'#8e3b46',rz:'#6a4fc9',bal:'#0f8b8d',dre:'#d4881e',bp:'#b8861f',exp:'#2f6fd0'};
+const COL={lan:'#1c7c4a',est:'#a8692b',con:'#2f6fd0',sf:'#8e3b46',dia:'#8e3b46',rz:'#6a4fc9',bal:'#0f8b8d',dre:'#d4881e',bp:'#b8861f',exp:'#2f6fd0'};
 const ic=(k,s)=>`<svg viewBox="0 0 24 24" width="${s||28}" height="${s||28}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICO[k]}</svg>`;
-function resumo(e){const m=saldos(e),ll=res(m),A=sec(m,'AC',1,'').t+sec(m,'ANC',1,'').t,P=sec(m,'PC',-1,'').t+sec(m,'PNC',-1,'').t+sec(m,'PL',-1,'',['Resultado do Exercício',ll]).t;
+function resumo(e){const m=saldos(e),ll=res(m),A=sec(m,'AC',1,'Ativo Circulante').t+sec(m,'ANC',1,'').t,P=sec(m,'PC',-1,'').t+sec(m,'PNC',-1,'').t+sec(m,'PL',-1,'',['Resultado do Exercício',ll]).t;
  return{ll,A,fecha:Math.abs(A-P)<0.005}}
 function app(k,lb,vl,tt){return `<button class="app" onclick="go('${k}')" title="${esc(tt)}" style="--c:${COL[k]}"><span class="tile">${ic(k)}</span><span class="lb">${lb}</span>${vl?`<span class="vl">${esc(vl)}</span>`:''}</button>`}
-function poster(e){const r=e?resumo(e):null,n=e?e.lan.length:0,nome=e?e.nome:'Sua empresa',
+function poster(e){const r=e?resumo(e):null,n=e?(e.modo==='sf'?Object.keys(e.sf||{}).length:e.lan.length):0,nome=e?e.nome:'Sua empresa',
  ini=esc(nome.replace(/[^A-Za-zÀ-ÿ0-9 ]/g,'').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase()||'?'),
  ll=r?r.ll:0,neg=ll<0,st=!e?['aguardando','']:!n?['sem lançamentos','']:r.fecha?['balanço fecha','ok']:['não fecha','bad'];
  return `<div class="poster"><i class="tape"></i><i class="tape"></i><div class="pt">PROCURADA</div><div class="pm">viva e, de preferência, no azul</div><div class="ph"><span>${ini}</span></div><div class="pn">${esc(nome)}</div><div class="pl">${neg?'prejuízo':'recompensa'}</div><div class="pv ${neg?'neg2':''}">${R(Math.abs(ll))}</div><div class="pa">tesouro (ativo): ${R(r?r.A:0)}</div><div class="stamp ${st[1]}">${st[0]}</div></div>`}
 function stage(e){const h=new Date().getHours(),sd=h<5?'boa madrugada':h<12?'bom dia':h<18?'boa tarde':'boa noite';
- const extra=!e?'<p class="mono sub">crie sua primeira empresa no topo da página</p>':!e.lan.length?`<p class="cta"><button onclick="go('lan')">fazer o primeiro lançamento</button></p>`:'';
- return `<section class="stage"><div class="dots" aria-hidden="true"></div><div class="sl"><p class="mono hi">${sd},</p><h2 class="big">Lançamentos viram</h2><p class="mono sub">contabilidade</p></div><div class="sr"><h2 class="big pix">Balanço</h2><p class="mono sub"></p></div><div class="sp">${poster(e)}${extra}</div></section>`}
+ const extra=!e?'<p class="mono sub">crie sua primeira empresa no topo da página</p>':(!e.lan.length&&e.modo!=='sf')?`<p class="cta"><button onclick="go('lan')">fazer o primeiro lançamento</button></p>`:'';
+ return `<section class="stage"><div class="dots" aria-hidden="true"></div><div class="sl"><p class="mono hi">${sd},</p><h2 class="big">Lançamentos viram</h2><p class="mono sub">contabilidade</p></div><div class="sr"><h2 class="big pix">Balanço</h2><p class="mono sub">agora: razonetes, DRE e balanço</p></div><div class="sp">${poster(e)}${extra}</div></section>`}
 function tIni(e){const n=e.lan.length,ne=(e.est&&e.est.itens||[]).length,pl=(k,s,p)=>k+(k===1?s:p);
  return stage(e)
  +`<p class="mono cap">lançar e organizar</p><div class="apps">`
  +app('lan','Lançamentos',n?n+pl(n,' lançamento',' lançamentos'):'nenhum ainda','Registre cada operação: débito, crédito e valor')
+ +app('sf','Saldos finais',e.modo==='sf'?'em uso':'','Digite só os saldos e gere DRE e Balanço')
  +app('est','Estoque',ne?ne+pl(ne,' mercadoria',' mercadorias'):'nenhuma ainda','PEPS, UEPS ou média ponderada')
  +app('con','Contas',e.contas.length+' contas','Plano de contas: crie e edite contas')
  +`</div><div class="dockw"><p class="mono cap">conferir e entregar</p><nav class="dock" aria-label="Relatórios">`
@@ -199,9 +203,23 @@ function tLan(e){const o=e.contas.map(a=>`<option value="${esc(a.c)}">${esc(a.c)
  <button onclick="add()">Lançar</button></div><p id="msg"></p></div>
  <div class="card"><table><tr><th>Nº</th><th>Data</th><th>Histórico</th><th>Débito</th><th>Crédito</th><th class="n">Valor</th><th></th></tr>${rows||'<tr><td colspan="7" class="mut">Nenhum lançamento ainda. Registre o primeiro acima ou carregue um exemplo.</td></tr>'}</table>
  ${e.lan.length?'':'<p><button class="ghost" onclick="ex()">Carregar lançamentos de exemplo</button></p>'}</div>
- 
- 
  `}
+
+/* ---------- Saldos finais ---------- */
+function sfRes(e){const m=saldos(e,1),ll=res(m);let D=0,C=0;Object.values(m).forEach(x=>{D+=x.d;C+=x.c});
+ const A=sec(m,'AC',1,'').t+sec(m,'ANC',1,'').t,P=sec(m,'PC',-1,'').t+sec(m,'PNC',-1,'').t+sec(m,'PL',-1,'',['Resultado do Exercício',ll]).t,ok=Math.abs(D-C)<0.005;
+ return `<p class="${ok?'ok':'bad'}">${ok?'Saldos conferem: devedores = credores.':'Saldos não conferem. Diferença (devedor − credor): '+R(D-C)}</p><p class="mut">Resultado do exercício: ${R(ll)} · Ativo: ${R(A)} · Passivo + PL: ${R(P)}</p>`}
+function sfSet(i){const e=E(),c=i.dataset.c,v=num(i.value);e.sf=e.sf||{};
+ if(isFinite(v)&&v){e.sf[c]=v;i.value=String(v).replace('.',',')}else{delete e.sf[c];i.value=''}
+ save();$('#sfres').innerHTML=sfRes(e)}
+function sfModo(v){E().modo=v?'sf':'lan';save();render()}
+function bnr(){const e=E();return e.modo==='sf'&&['rz','bal','dre','bp'].includes(tab)?'<p class="mut">Relatórios gerados a partir dos <b>Saldos Finais</b>. <a href="#" onclick="go(\'sf\');return false">Editar saldos</a></p>':''}
+function tSf(e){e.sf=e.sf||{};
+ const rows=e.contas.map(a=>`<tr><td>${esc(a.c)}</td><td>${esc(a.n)}</td><td>${SG[a.g]==='DRE'?'DRE · ':''}${G[a.g]}</td><td>${a.nat==='D'?'Devedora':'Credora'}</td><td class="n"><input data-c="${esc(a.c)}" inputmode="decimal" style="width:130px;text-align:right" placeholder="0,00" aria-label="Saldo de ${esc(a.n)}" value="${e.sf[a.c]?String(e.sf[a.c]).replace('.',','):''}" onchange="sfSet(this)"></td></tr>`).join('');
+ return `<div class="card"><p>Digite o <b>saldo final</b> de cada conta, no lado natural dela (conta devedora = saldo devedor, credora = saldo credor). Use sinal de menos só se o saldo estiver no lado oposto. Contas redutoras, como a Depreciação Acumulada, já são credoras: digite o valor positivo.</p>
+ <label class="chk"><input type="checkbox" ${e.modo==='sf'?'checked':''} onchange="sfModo(this.checked)"> Usar estes saldos como fonte dos relatórios (ignora os lançamentos)</label>
+ <p><button class="ghost" onclick="go('bal')">Balancete</button> <button class="ghost" onclick="go('dre')">DRE</button> <button class="ghost" onclick="go('bp')">Balanço</button></p><div id="sfres">${sfRes(e)}</div></div>
+ <div class="card"><table><tr><th>Código</th><th>Nome</th><th>Grupo</th><th>Natureza</th><th class="n">Saldo final (R$)</th></tr>${rows}</table></div>`}
 
 function tRz(e){const m=saldos(e),l=Object.values(m).filter(x=>x.md.length||x.mc.length);
  if(!l.length)return '<div class="card">Os razonetes aparecem aqui assim que você fizer lançamentos.</div>';
@@ -354,8 +372,8 @@ function rst(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.o
 function render(){armed=false;const ids=Object.keys(S.emp);
  $('#top').innerHTML=(ids.length?`<select aria-label="Empresa" onchange="S.cur=this.value;tab='ini';save();render()">${ids.map(i=>`<option value="${i}"${i===S.cur?' selected':''}>${esc(S.emp[i].nome)}</option>`).join('')}</select>`:'')+`<input id="nn" placeholder="Nome da empresa" aria-label="Nome da nova empresa"><button onclick="novo()">Criar empresa</button>`+(S.cur?`<button class="ghost" onclick="del(this)">Excluir empresa</button>`:'');
  if(!S.cur){$('#main').innerHTML=stage(null);return}
- const T={ini:['Início',tIni],lan:['Lançamentos',tLan],dia:['Diário',tDia],rz:['Razonetes',tRz],bal:['Balancete',tBal],dre:['DRE',tDre],bp:['Balanço Patrimonial',tBp],est:['Estoque',tEst],con:['Contas',tCon],exp:['Exportar PDF',tExp]};
- $('#main').innerHTML=(tab==='ini'?'':`<div class="tabs" role="tablist">${Object.entries(T).map(([k,v])=>`<button role="tab" class="${k===tab?'on':''}" onclick="go('${k}')">${v[0]}</button>`).join('')}</div>`)+(['dia','rz','bal','dre','bp'].includes(tab)?`<div class="bar"><button class="ghost" onclick="exportar(['${tab}'])">Exportar em PDF</button></div><p id="msg2"></p>`:'')+T[tab][1](E())}
+ const T={ini:['Início',tIni],lan:['Lançamentos',tLan],sf:['Saldos Finais',tSf],dia:['Diário',tDia],rz:['Razonetes',tRz],bal:['Balancete',tBal],dre:['DRE',tDre],bp:['Balanço Patrimonial',tBp],est:['Estoque',tEst],con:['Contas',tCon],exp:['Exportar PDF',tExp]};
+ $('#main').innerHTML=(tab==='ini'?'':`<div class="tabs" role="tablist">${Object.entries(T).map(([k,v])=>`<button role="tab" class="${k===tab?'on':''}" onclick="go('${k}')">${v[0]}</button>`).join('')}</div>`)+(['dia','rz','bal','dre','bp'].includes(tab)?`<div class="bar"><button class="ghost" onclick="exportar(['${tab}'])">Exportar em PDF</button></div><p id="msg2"></p>`:'')+bnr()+T[tab][1](E())}
 $('#upd').textContent='atualizado em '+new Date().toLocaleDateString('pt-BR',{month:'2-digit',year:'2-digit'});
 render();
 </script></body></html>
